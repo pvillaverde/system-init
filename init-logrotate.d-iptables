@@ -1,0 +1,13 @@
+/var/log/iptables.log
+{
+     rotate 7
+     daily
+     missingok
+     notifempty
+     #delaycompress
+     #compress
+     postrotate
+     cat /var/run/syslogd.pid  | xargs kill -HUP
+     #/usr/bin/killall -HUP rsyslogd
+     endscript
+}

@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+  alpine:
+    container_name: \${IMAGE_NAME}
+    image: alpine:latest
+    restart: always
+    command: echo "Yea!, is running"

@@ -1,0 +1,32 @@
+# Configuration
+set daemon 60
+with start delay 60
+
+set logfile /var/log/monit.log
+set pidfile /var/run/monit.pid
+set idfile /var/.monit.id
+set statefile /var/.monit.state
+
+set eventqueue
+    basedir /var/monit
+    slots 100
+
+set httpd port 2812 and
+   use address localhost
+   allow localhost
+
+# Services
+check system localhost
+
+check process docker with pidfile /var/run/docker.pid
+  start = "/sbin/service docker start"                      
+  stop = "/sbin/service docker stop"
+  if does not exist then restart
+
+check process cron with pidfile /var/run/crond.pid
+  start = "/sbin/service cron start"
+  stop = "/sbin/service cron stop"
+  if does not exist then restart
+
+# Other
+include /etc/monit.d/*
