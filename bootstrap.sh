@@ -38,19 +38,22 @@ cat /root/init/init-monitrc > /etc/monit/monitrc
 /etc/init.d/monit restart
 
 # Configure firewall
+chmod +x /root/init/firewall.sh
 /root/init/firewall.sh
 
 # Redirecting firewall logs to its own file
 sed -i '/RULES.*/a ## Regla para desviar mensajes de iptables\n:msg, startswith, "IPTABLES" -/var/log/iptables.log\n& ~' /etc/rsyslog.conf
 systemctl restart rsyslog
 
-
-
 # Configure logrotate
 echo "Configure logrotate"
 cat /root/init/init-logrotate.d-docker > /etc/logrotate.d/docker
 cat /root/init/init-logrotate.d-initlog > /etc/logrotate.d/initlog
 cat /root/init/init-logrotate.d-iptables > /etc/logrotate.d/iptables
+
+# Check-OS Script for Telegraf
+mkdir -p /usr/local/kirfed &>/dev/null
+cat /root/init/check-os.sh > /usr/local/kirfed/check-os.sh
 
 # Tune sysctl
 echo "Kernel tune"
@@ -61,7 +64,7 @@ if ! [ -f /root/init/docker-compose.yml ]; then
 version: "3.7"
 services:
   alpine:
-    container_name: \${IMAGE_NAME}
+    container_name: alpine_example
     image: alpine:latest
     restart: always
     command: echo "Yea!, is running"
@@ -79,8 +82,11 @@ rm -f /root/init/init-monitrc*
 rm -f /root/init/init-sysctl.conf
 rm -f /root/init/init-logrotate.d-docker
 rm -f /root/init/init-logrotate.d-initlog
+rm -f /root/init/init-logrotate.d-iptables
 rm -f /root/init/bootstrap*
+rm -f /root/init/check-os.sh
 rm -f /root/init/README.md
+rm -f /root/init/LICENSE
 
 if which apt-get > /dev/null; then
 	apt-get -qy --purge autoremove || true
