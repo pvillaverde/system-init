@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Check for the latest one available
 AUTER_DEB="https://github.com/rackerlabs/auter/releases/download/1.0.0/auter_1.0.0_all.deb"
-PACKAGES="curl git cron monit fail2ban dbus jq net-tools ncdu"
+PACKAGES="curl git cron monit fail2ban dbus jq net-tools ncdu iptables"
 
 # Install base requeriments
 mkdir /root/init; cd /root/init
@@ -16,7 +16,7 @@ if which apt-get > /dev/null; then
 
 	# Install Auter (security updates)
 	echo "Install AUTER (security updates)"
-	STATUS=$(curl -s -o /tmp/auter.deb -w '%{http_code}' ${AUTER_DEB})
+	STATUS=$(curl -s -o /tmp/auter.deb -w '%{http_code}' -L ${AUTER_DEB})
 	if [ ${STATUS} -eq 200 ]; then
 		dpkg -i /tmp/auter.deb
 		rm -f /tmp/auter.deb
@@ -27,6 +27,7 @@ if which apt-get > /dev/null; then
 else
   yum install -y  ${PACKAGES} auter
 fi
+cat /root/init/cron-auter >> /etc/cron.d/auter
 
 # Clone repo
 echo "Bootstrap System - init.sh"
@@ -36,20 +37,6 @@ git clone https://github.com/pvillaverde/system-init .
 echo "Configure monit"
 cat /root/init/init-monitrc > /etc/monit/monitrc
 /etc/init.d/monit restart
-
-# Configure firewall
-chmod +x /root/init/firewall.sh
-/root/init/firewall.sh
-
-# Redirecting firewall logs to its own file
-sed -i '/RULES.*/a ## Regla para desviar mensajes de iptables\n:msg, startswith, "IPTABLES" -/var/log/iptables.log\n& ~' /etc/rsyslog.conf
-systemctl restart rsyslog
-
-# Configure logrotate
-echo "Configure logrotate"
-cat /root/init/init-logrotate.d-docker > /etc/logrotate.d/docker
-cat /root/init/init-logrotate.d-initlog > /etc/logrotate.d/initlog
-cat /root/init/init-logrotate.d-iptables > /etc/logrotate.d/iptables
 
 # Check-OS Script for Telegraf
 mkdir -p /usr/local/kirfed &>/dev/null
@@ -75,9 +62,24 @@ fi
 # Bootstrap and start
 /root/init/init.sh
 
+# Configure firewall
+chmod +x /root/init/firewall.sh
+/root/init/firewall.sh
+
+# Redirecting firewall logs to its own file
+sed -i '/RULES.*/a ## Regla para desviar mensajes de iptables\n:msg, contains, "IPTABLES" -/var/log/iptables.log\n& stop' /etc/rsyslog.conf
+systemctl restart rsyslog
+
+# Configure logrotate
+echo "Configure logrotate"
+cat /root/init/init-logrotate.d-docker > /etc/logrotate.d/docker
+cat /root/init/init-logrotate.d-initlog > /etc/logrotate.d/initlog
+cat /root/init/init-logrotate.d-iptables > /etc/logrotate.d/iptables
+
 # Cleanup
 echo "Clean up"
 rm -Rf /root/init/.git*
+rm -f /root/init/cron-*
 rm -f /root/init/init-monitrc*
 rm -f /root/init/init-sysctl.conf
 rm -f /root/init/init-logrotate.d-docker

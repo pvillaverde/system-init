@@ -1,0 +1,13 @@
+# Kirfed - Default Scheduler
+
+# Get pending updates daily
+00 * * * root /usr/bin/auter --prep
+
+# Apply updates every friday
+00 23 * * Fri root /usr/bin/auter --apply; /usr/bin/auter --prep
+# Apply updates last friday of the month
+30 05 23-30 * * root [ $(date +\%a) = "Sat" ] && /usr/bin/auter --reboot
+
+
+# Cleanup pending
+00 06 * * * root /usr/bin/auter --disable; /usr/bin/auter --enable
