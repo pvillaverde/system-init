@@ -3,20 +3,15 @@ iptables -F
 # Añadir de nuevo las reglas de docker
 systemctl restart docker
 
-declare -A inputRules_0000=([proto]="tcp" [port]="22" [name]="Entrada_SSH (TCP 22)" )
-declare -A inputRules_0001=([proto]="tcp" [port]="80" [name]="Entrada_HTTP (TCP 80)" )
-declare -A inputRules_0002=([proto]="tcp" [port]="443" [name]="Entrada_HTTPS (TCP 443)" )
-declare -A inputRules_0003=([proto]="udp" [port]="29070" [name]="Entrada_MBII (UDP 29070)" )
-declare -A inputRules_0004=([proto]="udp" [port]="1194" [name]="Entrada_OPENVPN (UDP 1194)" )
-declare -A inputRules_0005=([proto]="udp" [port]="25565" [name]="Entrada_Minecraft (UDP 25565)" )
-declare -A inputRules_0006=([proto]="tcp" [port]="25565" [name]="Entrada_Minecraft (TCP 25565)" )
-declare -A inputRules_0007=([proto]="tcp" [port]="8123" [name]="Entrada_MapaMinecraft (TCP 8123)" )
-declare -A inputRules_0008=([proto]="tcp" [port]="8086" [name]="Entrada_InfluxDB (TCP 8086)" )
+declare -A inputRules_0000=([proto]="tcp" [port]="22" [name]="SSH" )
+declare -A inputRules_0001=([proto]="tcp" [port]="80" [name]="HTTP" )
+declare -A inputRules_0002=([proto]="tcp" [port]="443" [name]="HTTPS" )
+declare -A inputRules_0003=([proto]="udp" [port]="1194" [name]="OpenVPN" )
 
 declare -n inputRules
 for inputRules in ${!inputRules@}; do
-    iptables -A INPUT -p ${inputRules[proto]} --dport ${inputRules[port]} -j ACCEPT && echo IPv4_${inputRules[name]}
-    ip6tables -A INPUT -p ${inputRules[proto]} --dport ${inputRules[port]} -j ACCEPT && echo IPv6_${inputRules[name]}
+    iptables -A INPUT -p ${inputRules[proto]} --dport ${inputRules[port]} -j ACCEPT && echo "IPv4_Entrada_${inputRules[name]} (${inputRules[proto]} ${inputRules[port]})"
+    ip6tables -A INPUT -p ${inputRules[proto]} --dport ${inputRules[port]} -j ACCEPT && echo "IPv6_Entrada_${inputRules[name]} (${inputRules[proto]} ${inputRules[port]})"
 done
 
 #Permitir INPUT en loopback
@@ -71,7 +66,7 @@ ip6tables -A OUTPUT -p udp --sport 1024:65535    -m conntrack --ctstate NEW,ESTA
 ip6tables -A OUTPUT -p tcp --sport 1024:65535    -m conntrack --ctstate NEW,ESTABLISHED  -j ACCEPT && echo "IPv6_Saída_TCP_CLIENTE"
 ip6tables -A OUTPUT -p udp                       -m conntrack --ctstate ESTABLISHED      -j ACCEPT && echo "IPv6_Saída_UDP_RESPOSTAS_SERVER"
 ip6tables -A OUTPUT -p tcp                       -m conntrack --ctstate ESTABLISHED      -j ACCEPT && echo "IPv6_Saída_TCP_RESPOSTAS_SERVER"
-ip6tables -A OUTPUT -p icmp6                     -m conntrack --ctstate NEW,ESTABLISHED  -j ACCEPT && echo "IPv6_Saída_Peticions_ICMP"
+ip6tables -A OUTPUT -p icmpv6                    -m conntrack --ctstate NEW,ESTABLISHED  -j ACCEPT && echo "IPv6_Saída_Peticions_ICMP"
 ip6tables -A OUTPUT -p icmpv6                    -m conntrack --ctstate NEW,ESTABLISHED  -j ACCEPT && echo "IPv6 - Peticions_ICMP"
 ip6tables -A OUTPUT -p icmpv6 -j ACCEPT && echo "IPv6 - Salida ping6"
 #
