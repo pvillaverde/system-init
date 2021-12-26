@@ -7,7 +7,7 @@ set +e
 # Required for some tools
 PATH=$PATH:/usr/local/bin
 
-UPDATE_URL="https://github.com/pvillaverde/system-init/blob/main/init.sh"
+UPDATE_URL="https://raw.githubusercontent.com/pvillaverde/system-init/main/init.sh"
 PIDFILE="/tmp/docker-init.pid"
 BOOTSTRAP_FILE=/.docker-init
 DOCKER_BIN=/usr/bin/docker
