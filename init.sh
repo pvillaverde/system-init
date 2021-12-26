@@ -13,6 +13,7 @@ BOOTSTRAP_FILE=/.docker-init
 DOCKER_BIN=/usr/bin/docker
 DOCKER_COMPOSE_BIN=/usr/bin/docker-compose
 DOCKER_SOCK=/var/run/docker.sock
+DOCKER_COMPOSE_FILES=`find /root/init/docker*.yml | sed -e 's/^/-f /'`
 
 DOCKER_COMPOSE_VERSION=1.29.2
 
@@ -264,7 +265,7 @@ _download_sysctl_aws() {
 }
 
 _docker_compose() {
-	${DOCKER_COMPOSE_BIN} $@ 2>&1 | tee /tmp/dc_pull_stderr.txt
+	${DOCKER_COMPOSE_BIN} ${DOCKER_COMPOSE_FILES} $@ 2>&1 | tee /tmp/dc_pull_stderr.txt
 
 	# Fix docker-compose -> gcloud integration
 	if [ $? -ne 0 ]; then
@@ -272,7 +273,7 @@ _docker_compose() {
 		if [ ${SSL_ERROR} -gt 0 ]; then
 			echo "(OPS!: Found OPENSSL_1_1_1 error: fixing...)"
 			export LD_LIBRARY_PATH=/usr/local/lib
-			${DOCKER_COMPOSE_BIN} $@
+			${DOCKER_COMPOSE_BIN} ${DOCKER_COMPOSE_FILES} $@
 		fi
 	fi
 }
