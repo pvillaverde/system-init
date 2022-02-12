@@ -6,7 +6,6 @@ systemctl restart docker
 declare -A inputRules_0000=([proto]="tcp" [port]="22" [name]="SSH" )
 declare -A inputRules_0001=([proto]="tcp" [port]="80" [name]="HTTP" )
 declare -A inputRules_0002=([proto]="tcp" [port]="443" [name]="HTTPS" )
-declare -A inputRules_0003=([proto]="udp" [port]="1194" [name]="OpenVPN" )
 
 declare -n inputRules
 for inputRules in ${!inputRules@}; do
