@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Check for the latest one available
 AUTER_DEB="https://github.com/rackerlabs/auter/releases/download/1.0.0/auter_1.0.0_all.deb"
-PACKAGES="curl git cron monit fail2ban dbus jq net-tools ncdu iptables"
+PACKAGES="curl git cron monit fail2ban dbus jq net-tools ncdu iptables fzf"
 
 # Install base requeriments
 mkdir /root/init; cd /root/init
@@ -98,5 +98,7 @@ echo 'alias dc="docker-compose"' >> ~/.bashrc
 echo 'HISTTIMEFORMAT="%d/%m/%y %T "' >> ~/.bashrc  # or respectively
 echo 'HISTTIMEFORMAT="%F %T "' >> ~/.bashrc
 echo 'HISTFILE="$HOME/.bash_history.$SUDO_USER"' >> ~/.bashrc # Keep separated history files
+echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> ~/.bashrc 
+echo 'source /usr/share/doc/fzf/examples/completion.bash' >> ~/.bashrc 
 
 source ~/.bashrc
