@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Check for the latest one available
 AUTER_DEB="https://github.com/rackerlabs/auter/releases/download/1.0.0/auter_1.0.0_all.deb"
-PACKAGES="curl git cron monit fail2ban dbus jq net-tools ncdu iptables fzf"
+PACKAGES="curl git cron monit fail2ban dbus jq net-tools ncdu iptables fzf telnet"
 
 # Install base requeriments
 mkdir /root/init; cd /root/init
