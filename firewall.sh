@@ -1,7 +1,14 @@
-#!/usr/bin/env bash
+##########
+echo "Borrando as táboas de firewall actuais"
 iptables -F
-# Añadir de nuevo las reglas de docker
+##########
+echo "Reiniciando docker para engadir de novo as súas propias regras"
 systemctl restart docker
+##########
+#echo "Engadindo regras de acceso da propia rede"
+#LOCALNET="192.168.1.0/24"
+#iptables -A INPUT -p tcp -s $LOCALNET --dport 139 -j ACCEPT && echo "IPv4_Entrada_SAMBA (tcp 139} from $LOCALNET)"
+#iptables -A INPUT -p tcp -s $LOCALNET --dport 445 -j ACCEPT && echo "IPv4_Entrada_SAMBA (tcp 445} from $LOCALNET)"
 
 declare -A inputRules_0000=([proto]="tcp" [port]="22" [name]="SSH" )
 declare -A inputRules_0001=([proto]="tcp" [port]="80" [name]="HTTP" )
