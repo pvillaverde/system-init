@@ -76,6 +76,18 @@ cat /root/init/init-logrotate.d-docker > /etc/logrotate.d/docker
 cat /root/init/init-logrotate.d-initlog > /etc/logrotate.d/initlog
 cat /root/init/init-logrotate.d-iptables > /etc/logrotate.d/iptables
 
+# Install powerline-go
+curl https://api.github.com/repos/justjanne/powerline-go/releases/latest \
+   | grep "powerline-go-linux-amd64" \
+   | cut -d : -f 2,3 \
+   | tr -d \" \
+   | wget -qi -
+mv powerline-go-linux-amd64 /usr/local/bin/powerline-go
+chmod +x /usr/local/bin/powerline-go
+# Set history format, powerline-go config, aliases...
+cat /root/init/bash.bashrc >> /etc/bash.bashrc
+echo "Kustomize motd with http://www.network-science.de/ascii/" >> /etc/motd
+
 # Cleanup
 echo "Clean up"
 rm -Rf /root/init/.git*
@@ -85,6 +97,7 @@ rm -f /root/init/init-sysctl.conf
 rm -f /root/init/init-logrotate.d-docker
 rm -f /root/init/init-logrotate.d-initlog
 rm -f /root/init/init-logrotate.d-iptables
+rm -f /root/init/bash.bashrc
 rm -f /root/init/bootstrap*
 rm -f /root/init/check-os.sh
 rm -f /root/init/README.md
@@ -93,12 +106,4 @@ rm -f /root/init/LICENSE
 if which apt-get > /dev/null; then
 	apt-get -qy --purge autoremove || true
 fi
-echo 'alias dc="docker-compose"' >> ~/.bashrc
-# Timestamp on history
-echo 'HISTTIMEFORMAT="%d/%m/%y %T "' >> ~/.bashrc  # or respectively
-echo 'HISTTIMEFORMAT="%F %T "' >> ~/.bashrc
-echo 'HISTFILE="$HOME/.bash_history.$SUDO_USER"' >> ~/.bashrc # Keep separated history files
-echo 'source /usr/share/doc/fzf/examples/key-bindings.bash' >> ~/.bashrc 
-echo 'source /usr/share/doc/fzf/examples/completion.bash' >> ~/.bashrc 
 
-source ~/.bashrc
